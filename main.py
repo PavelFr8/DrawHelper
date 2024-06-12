@@ -3,7 +3,6 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLa
 from PyQt6.QtGui import QPainter, QPen, QMouseEvent, QImage, QKeyEvent, QColor
 from PyQt6.QtCore import Qt, QPoint, QSize
 import ctypes
-import time
 
 user32 = ctypes.windll.user32
 w, h = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
