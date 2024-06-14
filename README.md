@@ -1,10 +1,11 @@
 # DrawHelper
-DrawHelper - это приложение, которое позвояет вам моментально начать рисовать на экране, без перехода в графические редакторы. Вы можете рисовать прямо на рабочем или в браузере, то есть - где ходите.
 
-Как его запустить?
+DrawHelper - an application that allows you to instantly start drawing on the screen, without switching to graphic editors. You can draw directly on the desktop or in the browser, that is, wherever you go.
 
-Для запуска проекта вам понадобится Python версии 3.9+
+How to launch it?
 
-Установите необходимые библиотеки, выполнив команду: pip install -r requirements.txt
+To run the project you will need Python version 3.9+
 
-Активируйте файл run.exe в папке DrawHelper или файл run.py
+Install the required libraries by running the command: pip install -r requirements.txt
+
+Activate the run.exe file in the DrawHelper folder or the run.py file
