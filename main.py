@@ -2,6 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QTabWidget, QHBoxLayout, QLabel, QSlider, QColorDialog, QPushButton, QVBoxLayout
 from PyQt6.QtGui import QPainter, QPen, QMouseEvent, QImage, QKeyEvent, QColor
 from PyQt6.QtCore import Qt, QPoint, QSize
+from funcs.create_save import create_save
 import ctypes
 
 # get the size of users screen.
@@ -16,13 +17,14 @@ class DrawingWidget(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_StaticContents)
         self.drawing = False
         self.paint_size = 10
-        self.color = Qt.GlobalColor.black
+        self.color = QColor('#000000')
+        self.opacity = 50
         self.last_point = QPoint()
         self.image = QImage(QSize(w, h - 50), QImage.Format.Format_ARGB32)
-        self.image.fill(QColor(0, 0, 0, 50))
+        self.image.fill(QColor(0, 0, 0, self.opacity))
         self.setFixedSize(w, h)
 
-    # funcs for drawing
+    # next funcs for drawing
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
             self.drawing = True
@@ -45,15 +47,16 @@ class DrawingWidget(QWidget):
         canvas_painter.drawImage(0, 0, self.image)
 
 
-# the menu
+# the menu class
 class MenuWidget(QTabWidget):
     def __init__(self, draw_area):
         super().__init__()
         self.draw_area = draw_area
-        self.setFixedSize(288, 190)
+        self.setFixedSize(288, 115)
         self.setStyleSheet("""
             font-weight: bold;
-            background-color: rgba(10, 10, 10, 60);
+            font-size: 13px;
+            background-color: rgba(10, 10, 10, 30);
         """)
 
         # Tab0 - Settings
@@ -62,13 +65,13 @@ class MenuWidget(QTabWidget):
 
         opacity_changer = QWidget()
         opacity_layout = QHBoxLayout()
-        opacity_layout.addWidget(QLabel('Прозрачность:'))
+        opacity_layout.addWidget(QLabel('Background:'))
         slider1 = QSlider(Qt.Orientation.Horizontal)
         slider1.valueChanged.connect(self.change_opacity)
         opacity_layout.addWidget(slider1)
         opacity_changer.setLayout(opacity_layout)
 
-        exit_button = QPushButton('Выход')
+        exit_button = QPushButton('Exit')
         exit_button.clicked.connect(self.exit)
 
         tab0_layout.addWidget(opacity_changer)
@@ -82,7 +85,7 @@ class MenuWidget(QTabWidget):
         # Tab 2 - Color
         tab2 = QWidget()
         tab2_layout = QHBoxLayout()
-        tab2_layout.addWidget(QLabel('Размер:'))
+        tab2_layout.addWidget(QLabel('Size:'))
 
         slider = QSlider(Qt.Orientation.Horizontal)
         slider.valueChanged.connect(self.change_size)
@@ -94,18 +97,17 @@ class MenuWidget(QTabWidget):
         tab3 = QWidget()
         self.tabBarClicked.connect(self.choose_color)
 
-
         # Add tabs to QTabWidget
-        self.addTab(tab0, "Настройки")
-        self.addTab(tab1, "Очистить")
-        self.addTab(tab3, "Цвет")
-        self.addTab(tab2, "Размер")
+        self.addTab(tab0, "Settings")
+        self.addTab(tab1, "Clear")
+        self.addTab(tab3, "Color")
+        self.addTab(tab2, " Size ")
 
     # func which is clear drawings
     def clear(self, index):
         if index == 1:
             # print('clear')
-            self.draw_area.image.fill(QColor(0, 0, 0, 50))
+            self.draw_area.image.fill(QColor(0, 0, 0, self.draw_area.opacity))
             self.draw_area.update()
 
     # func which is help choose color
@@ -118,9 +120,14 @@ class MenuWidget(QTabWidget):
         self.draw_area.paint_size = value / 4
 
     def change_opacity(self, value):
-        print(value)
+        self.draw_area.opacity = int(value * 2.5)
+        if self.draw_area.opacity == 0:
+            self.draw_area.opacity = 1
+        self.draw_area.image.fill(QColor(0, 0, 0, self.draw_area.opacity))
+        self.draw_area.update()
 
     def exit(self):
+        create_save(self.draw_area)
         sys.exit(app.exec())
 
 
@@ -134,19 +141,20 @@ class MainWindow(QMainWindow):
 
         central_widget = QWidget(self)
         central_layout = QHBoxLayout(central_widget)
-        drawing_widget = DrawingWidget()
-        central_layout.addWidget(drawing_widget)
+        self.drawing_widget = DrawingWidget()
+        central_layout.addWidget(self.drawing_widget)
         central_widget.setLayout(central_layout)
 
         self.setCentralWidget(central_widget)
 
-        self.menu_widget = MenuWidget(drawing_widget)
+        self.menu_widget = MenuWidget(self.drawing_widget)
         self.menu_widget.setParent(self)
         self.menu_widget.setGeometry(1, 1, 200, h - 50)
 
     # Function to close the app
     def keyPressEvent(self, event: QKeyEvent):
         if event.key() == Qt.Key.Key_Escape:
+            create_save(self.drawing_widget)
             self.close()
 
 

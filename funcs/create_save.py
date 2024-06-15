@@ -1,29 +1,18 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMenu
-from PyQt6.QtGui import QAction  # Импортируем QAction отсюда
+import json
+import os
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
-    def initUI(self):
-        # Создаем действие для меню
-        exitAction = QAction('&Выход', self)
-        exitAction.triggered.connect(self.close)
-
-        # Создаем само меню
-        menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&Файл')
-        fileMenu.addAction(exitAction)
-
-        self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Пример QMenu')
-        self.show()
-
-def main():
-    app = QApplication([])
-    ex = MainWindow()
-    app.exec()
-
-if __name__ == '__main__':
-    main()
+# func which is make saves if json format
+def create_save(widget):
+    try:
+        data = {
+            'color': f'{widget.color.name()}',  # get the color in format #000000
+            'size': widget.paint_size,
+            'opacity': widget.opacity,
+        }
+        # print(data)
+        save_path = os.path.join("saves", "save.json")
+        widget.image.save('saves/save.png')
+        with open(save_path, 'w') as f:
+            json.dump(data, f)
+    except Exception as e:
+        print(e)
