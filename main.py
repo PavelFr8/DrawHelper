@@ -1,6 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QTabWidget, QHBoxLayout, QPushButton, \
-    QLabel
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QTabWidget, QHBoxLayout, QLabel, QSlider, QColorDialog, QPushButton, QVBoxLayout
 from PyQt6.QtGui import QPainter, QPen, QMouseEvent, QImage, QKeyEvent, QColor
 from PyQt6.QtCore import Qt, QPoint, QSize
 import ctypes
@@ -16,9 +15,11 @@ class DrawingWidget(QWidget):
         super().__init__()
         self.setAttribute(Qt.WidgetAttribute.WA_StaticContents)
         self.drawing = False
+        self.paint_size = 10
+        self.color = Qt.GlobalColor.black
         self.last_point = QPoint()
         self.image = QImage(QSize(w, h - 50), QImage.Format.Format_ARGB32)
-        self.image.fill(QColor(0, 0, 0, 100))
+        self.image.fill(QColor(0, 0, 0, 50))
         self.setFixedSize(w, h)
 
     # funcs for drawing
@@ -30,7 +31,7 @@ class DrawingWidget(QWidget):
     def mouseMoveEvent(self, event: QMouseEvent):
         if (event.buttons() & Qt.MouseButton.LeftButton) and self.drawing:
             painter = QPainter(self.image)
-            painter.setPen(QPen(Qt.GlobalColor.black, 10, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
+            painter.setPen(QPen(self.color, self.paint_size, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
             painter.drawLine(self.last_point, event.position().toPoint())
             self.last_point = event.position().toPoint()
             self.update()
@@ -46,32 +47,81 @@ class DrawingWidget(QWidget):
 
 # the menu
 class MenuWidget(QTabWidget):
-    def __init__(self):
+    def __init__(self, draw_area):
         super().__init__()
-        self.setFixedSize(250, 100)
+        self.draw_area = draw_area
+        self.setFixedSize(288, 190)
+        self.setStyleSheet("""
+            font-weight: bold;
+            background-color: rgba(10, 10, 10, 60);
+        """)
+
+        # Tab0 - Settings
+        tab0 = QWidget()
+        tab0_layout = QVBoxLayout()
+
+        opacity_changer = QWidget()
+        opacity_layout = QHBoxLayout()
+        opacity_layout.addWidget(QLabel('Прозрачность:'))
+        slider1 = QSlider(Qt.Orientation.Horizontal)
+        slider1.valueChanged.connect(self.change_opacity)
+        opacity_layout.addWidget(slider1)
+        opacity_changer.setLayout(opacity_layout)
+
+        exit_button = QPushButton('Выход')
+        exit_button.clicked.connect(self.exit)
+
+        tab0_layout.addWidget(opacity_changer)
+        tab0_layout.addWidget(exit_button)
+        tab0.setLayout(tab0_layout)
 
         # Tab 1 - Clear
         tab1 = QWidget()
-        tab1_layout = QVBoxLayout()
-        tab1_layout.addWidget(QLabel("1"))
-        tab1.setLayout(tab1_layout)
+        self.tabBarClicked.connect(self.clear)
 
         # Tab 2 - Color
         tab2 = QWidget()
-        tab2_layout = QVBoxLayout()
-        tab2_layout.addWidget(QLabel("2"))
+        tab2_layout = QHBoxLayout()
+        tab2_layout.addWidget(QLabel('Размер:'))
+
+        slider = QSlider(Qt.Orientation.Horizontal)
+        slider.valueChanged.connect(self.change_size)
+        tab2_layout.addWidget(slider)
+
         tab2.setLayout(tab2_layout)
 
         # Tab 3 - Size
         tab3 = QWidget()
-        tab3_layout = QVBoxLayout()
-        tab3_layout.addWidget(QLabel("3"))
-        tab3.setLayout(tab3_layout)
+        self.tabBarClicked.connect(self.choose_color)
+
 
         # Add tabs to QTabWidget
-        self.addTab(tab1, "  Очистить  ")
-        self.addTab(tab2, "    Цвет    ")
-        self.addTab(tab3, "   Размер   ")
+        self.addTab(tab0, "Настройки")
+        self.addTab(tab1, "Очистить")
+        self.addTab(tab3, "Цвет")
+        self.addTab(tab2, "Размер")
+
+    # func which is clear drawings
+    def clear(self, index):
+        if index == 1:
+            # print('clear')
+            self.draw_area.image.fill(QColor(0, 0, 0, 50))
+            self.draw_area.update()
+
+    # func which is help choose color
+    def choose_color(self, index):
+        if index == 2:
+            self.draw_area.color = QColorDialog.getColor()
+
+    # func which is change size of the pen
+    def change_size(self, value):
+        self.draw_area.paint_size = value / 4
+
+    def change_opacity(self, value):
+        print(value)
+
+    def exit(self):
+        sys.exit(app.exec())
 
 
 class MainWindow(QMainWindow):
@@ -90,7 +140,7 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(central_widget)
 
-        self.menu_widget = MenuWidget()
+        self.menu_widget = MenuWidget(drawing_widget)
         self.menu_widget.setParent(self)
         self.menu_widget.setGeometry(1, 1, 200, h - 50)
 
