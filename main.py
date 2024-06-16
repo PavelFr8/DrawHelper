@@ -53,7 +53,6 @@ class DrawingWidget(QWidget):
                     self.image = self.temp_image
                     self.update()
 
-
     def mouseMoveEvent(self, event: QMouseEvent):
         if (event.buttons() & Qt.MouseButton.LeftButton) and self.drawing:
             if self.mode == 'pen':
