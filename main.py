@@ -108,7 +108,7 @@ class MenuWidget(QTabWidget):
         self.setStyleSheet("""
             font-weight: bold;
             font-size: 13px;
-            background-color: rgba(10, 10, 10, 30);
+            background-color: rgba(10, 10, 10, 70);
         """)
 
         # Tab0 - Settings
