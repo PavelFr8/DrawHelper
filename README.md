@@ -1,8 +1,10 @@
-# DrawHelper
+#№ DrawHelper
 
 DrawHelper - an application that allows you to instantly start drawing on the screen, without switching to graphic editors. You can draw directly on the desktop or in the browser, that is, wherever you go.
 
-How to launch it?
+<hr>
+
+#How to launch it?
 
 To run the project you will need Python version 3.9+
 
