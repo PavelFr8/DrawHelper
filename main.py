@@ -1,14 +1,17 @@
-import sys
+import os.path
+
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QTabWidget, QHBoxLayout, QLabel, QSlider, QColorDialog, QPushButton, QVBoxLayout
 from PyQt6.QtGui import QPainter, QPen, QMouseEvent, QImage, QKeyEvent, QColor
 from PyQt6.QtCore import Qt, QPoint, QSize
+
 from funcs.create_save import create_save
-import ctypes
+from funcs.get_save import get_save
+from funcs.get_screen_size import get_screen_size
 
-# get the size of users screen.
-user32 = ctypes.windll.user32
-w, h = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+import sys
 
+
+w, h = get_screen_size()
 
 # widget which is works as area where user draw
 class DrawingWidget(QWidget):
@@ -16,13 +19,20 @@ class DrawingWidget(QWidget):
         super().__init__()
         self.setAttribute(Qt.WidgetAttribute.WA_StaticContents)
         self.drawing = False
-        self.paint_size = 10
-        self.color = QColor('#000000')
-        self.opacity = 50
         self.last_point = QPoint()
-        self.image = QImage(QSize(w, h - 50), QImage.Format.Format_ARGB32)
-        self.image.fill(QColor(0, 0, 0, self.opacity))
         self.setFixedSize(w, h)
+
+        # load save data
+        data = get_save()
+        print(data)
+        self.paint_size = data['size']
+        self.color = QColor(data['color'])
+        self.opacity = data['opacity']
+        if os.path.exists('saves/save.png'):
+            self.image = QImage('saves/save.png')
+        else:
+            self.image = QImage(QSize(w, h - 50), QImage.Format.Format_ARGB32)
+            self.image.fill(QColor(0, 0, 0, 100))
 
     # next funcs for drawing
     def mousePressEvent(self, event: QMouseEvent):
@@ -82,7 +92,7 @@ class MenuWidget(QTabWidget):
         tab1 = QWidget()
         self.tabBarClicked.connect(self.clear)
 
-        # Tab 2 - Color
+        # Tab 2 - Size
         tab2 = QWidget()
         tab2_layout = QHBoxLayout()
         tab2_layout.addWidget(QLabel('Size:'))
@@ -93,7 +103,7 @@ class MenuWidget(QTabWidget):
 
         tab2.setLayout(tab2_layout)
 
-        # Tab 3 - Size
+        # Tab 3 - Color
         tab3 = QWidget()
         self.tabBarClicked.connect(self.choose_color)
 
@@ -109,6 +119,7 @@ class MenuWidget(QTabWidget):
             # print('clear')
             self.draw_area.image.fill(QColor(0, 0, 0, self.draw_area.opacity))
             self.draw_area.update()
+            print(self.draw_area.opacity)
 
     # func which is help choose color
     def choose_color(self, index):
@@ -139,6 +150,7 @@ class MainWindow(QMainWindow):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setGeometry(1, 1, w, h - 50)
 
+        # add drawing area
         central_widget = QWidget(self)
         central_layout = QHBoxLayout(central_widget)
         self.drawing_widget = DrawingWidget()
@@ -147,6 +159,7 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(central_widget)
 
+        # add menu
         self.menu_widget = MenuWidget(self.drawing_widget)
         self.menu_widget.setParent(self)
         self.menu_widget.setGeometry(1, 1, 200, h - 50)
