@@ -10,4 +10,4 @@ To run the project you will need Python version 3.9+
 
 Install the required libraries by running the command: pip install -r requirements.txt
 
-Activate the run.exe file in the DrawHelper folder or the run.py file
+Activate the run.exe file in the <b>DrawHelper</b> folder or the <b>run.py</b>
