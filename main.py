@@ -1,7 +1,7 @@
 import os.path
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QTabWidget, QHBoxLayout, QLabel, QSlider, QColorDialog, QPushButton, QVBoxLayout
-from PyQt6.QtGui import QPainter, QPen, QMouseEvent, QImage, QKeyEvent, QColor
+from PyQt6.QtGui import QPainter, QPen, QMouseEvent, QImage, QKeyEvent, QColor, QCursor, QPixmap
 from PyQt6.QtCore import Qt, QPoint, QSize
 
 from funcs.create_save import create_save
@@ -18,6 +18,7 @@ class DrawingWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setAttribute(Qt.WidgetAttribute.WA_StaticContents)
+        self.setCursor(QCursor(QPixmap('img/pen.cur')))
         self.drawing = False
         self.last_point = QPoint()
         self.start_point = QPoint()
@@ -27,7 +28,7 @@ class DrawingWidget(QWidget):
 
         # load save data
         data = get_save()
-        print(data)
+        # print(data)
         self.paint_size = data['size']
         self.color = QColor(data['color'])
         self.opacity = data['opacity']
@@ -132,6 +133,9 @@ class MenuWidget(QTabWidget):
 
         # Tab 1 - Clear
         tab1 = QWidget()
+        tab1_layout = QVBoxLayout()
+        tab1_layout.addWidget(QPushButton('Your screen was cleaned!'))
+        tab1.setLayout(tab1_layout)
         self.tabBarClicked.connect(self.clear)
 
         # Tab 2 - Size
@@ -163,6 +167,9 @@ class MenuWidget(QTabWidget):
 
         # Tab 3 - Color
         tab3 = QWidget()
+        tab3_layout = QVBoxLayout()
+        tab3_layout.addWidget(QPushButton('Yahoo! You changed color!'))
+        tab3.setLayout(tab3_layout)
         self.tabBarClicked.connect(self.choose_color)
 
         # Add tabs to QTabWidget
@@ -174,10 +181,9 @@ class MenuWidget(QTabWidget):
     # func which is clear drawings
     def clear(self, index):
         if index == 1:
-            # print('clear')
             self.draw_area.image.fill(QColor(0, 0, 0, self.draw_area.opacity))
             self.draw_area.update()
-            print(self.draw_area.opacity)
+            # print(self.draw_area.opacity)
 
     # func which is help choose color
     def choose_color(self, index):
