@@ -23,6 +23,7 @@ class DrawingWidget(QWidget):
         self.last_point = QPoint()
         self.start_point = QPoint()
         self.temp_image = None
+        self.history = []
         self.setFixedSize(w, h)
         self.mode = 'pen'
         self.background = QImage(QSize(w, h - 50), QImage.Format.Format_ARGB32)
@@ -43,12 +44,18 @@ class DrawingWidget(QWidget):
             self.image.fill(QColor(0, 0, 0, 1))
 
 
-    # next funcs for drawing
+    # funcs for drawing
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
             if self.mode == 'pen':
                 self.drawing = True
                 self.last_point = event.position().toPoint()
+                # Save image state
+                if len(self.history) <= 10:
+                    self.history.append(self.image.copy())
+                else:
+                    self.history = self.history[1:]
+                    self.history.append(self.image.copy())
             elif self.mode == 'circle' or self.mode == 'line':
                 if not self.drawing:
                     self.drawing = True
@@ -57,6 +64,12 @@ class DrawingWidget(QWidget):
                 else:
                     self.drawing = False
                     self.image = self.temp_image
+                    # Save image state
+                    if len(self.history) <= 10:
+                        self.history.append(self.image.copy())
+                    else:
+                        self.history = self.history[1:]
+                        self.history.append(self.image.copy())
                     self.update()
 
     # func for drawing in different drawing modes
@@ -197,12 +210,13 @@ class MenuWidget(QTabWidget):
         if index == 1:
             self.draw_area.image.fill(QColor(0, 0, 0, 1))
             self.draw_area.update()
-            # print(self.draw_area.opacity)
 
     # func which is help choose color
-    def choose_color(self, index):
+    def choose_color(self , index):
         if index == 2:
-            self.draw_area.color = QColorDialog.getColor()
+            color = QColorDialog.getColor()
+            if color.isValid():
+                self.draw_area.color = color
 
     # func which is change size of the pen
     def change_size(self, value):
@@ -253,6 +267,12 @@ class MainWindow(QMainWindow):
         if event.key() == Qt.Key.Key_Escape:
             create_save(self.drawing_widget)
             self.close()
+
+        if event.key() == (Qt.Key.Key_Control and Qt.Key.Key_Z):
+            print('dcmdfcmf,')
+            if self.drawing_widget.history:
+                self.drawing_widget.image = self.drawing_widget.history.pop()
+                self.drawing_widget.update()
 
 
 if __name__ == '__main__':
