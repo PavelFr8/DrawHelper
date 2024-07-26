@@ -1,13 +1,32 @@
 # DrawHelper
+![Static Badge](https://img.shields.io/badge/PyQt6-DrawHelper%20%F0%9F%96%8C-orange)
 
-DrawHelper - an application an application developed in PyQt6 that allows you to instantly start drawing on the screen, without switching to graphic editors. You can draw directly on the desktop or in the browser, that is, wherever you go.
+DrawHelper — an application developed in PyQt6 that allows you to instantly start drawing on the screen without switching to graphic editors. You can draw directly on the desktop or in the browser, that is, wherever you are.
 
 <hr>
 
-## How to launch it?
+## User technology
 
-To run the project you will need Python version 3.9+
+* Python 3.9;
+* PyQt6 (Python GUI library);
+* JSON (saves);
 
-Install the required libraries by running the command: pip install -r requirements.txt
+<hr>
 
-Activate the run.exe file in the <b>DrawHelper</b> folder or the <b>run.py</b>
+## How to run app
+
+Run the **run.exe** file and it will create application shortcut
+
+OR
+
+Install the requirements.txt
+
+```ubuntu
+$ python3 pip instal -r requirements.txt
+```
+
+Run app
+
+```ubuntu
+$ python3 run.py
+```
