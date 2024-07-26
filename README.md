@@ -3,6 +3,8 @@
 
 DrawHelper — an application developed in PyQt6 that allows you to instantly start drawing on the screen without switching to graphic editors. You can draw directly on the desktop or in the browser, that is, wherever you are.
 
+![screenshot](img/img.png)
+
 <hr>
 
 ## User technology
