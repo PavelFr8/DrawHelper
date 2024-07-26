@@ -25,18 +25,23 @@ class DrawingWidget(QWidget):
         self.temp_image = None
         self.setFixedSize(w, h)
         self.mode = 'pen'
+        self.background = QImage(QSize(w, h - 50), QImage.Format.Format_ARGB32)
 
         # load save data
         data = get_save()
-        # print(data)
+
         self.paint_size = data['size']
         self.color = QColor(data['color'])
         self.opacity = data['opacity']
+
         if os.path.exists('saves/save.png'):
+            self.background.fill(QColor(0, 0, 0, self.opacity))
             self.image = QImage('saves/save.png')
         else:
+            self.background.fill(QColor(0, 0, 0, 100))
             self.image = QImage(QSize(w, h - 50), QImage.Format.Format_ARGB32)
-            self.image.fill(QColor(0, 0, 0, 100))
+            self.image.fill(QColor(0, 0, 0, 1))
+
 
     # next funcs for drawing
     def mousePressEvent(self, event: QMouseEvent):
@@ -54,6 +59,7 @@ class DrawingWidget(QWidget):
                     self.image = self.temp_image
                     self.update()
 
+    # func for drawing in different drawing modes
     def mouseMoveEvent(self, event: QMouseEvent):
         if (event.buttons() & Qt.MouseButton.LeftButton) and self.drawing:
             if self.mode == 'pen':
@@ -94,6 +100,9 @@ class DrawingWidget(QWidget):
 
     def paintEvent(self, event):
         canvas_painter = QPainter(self)
+
+        canvas_painter.drawImage(0, 0, self.background)
+
         if self.temp_image and (self.mode == 'circle' or self.mode == 'line') and self.drawing:
             canvas_painter.drawImage(0, 0, self.temp_image)
         else:
@@ -116,6 +125,7 @@ class MenuWidget(QTabWidget):
         tab0 = QWidget()
         tab0_layout = QVBoxLayout()
 
+        # Tab0 - Background
         opacity_changer = QWidget()
         opacity_layout = QHBoxLayout()
         opacity_layout.addWidget(QLabel('Background:'))
@@ -124,9 +134,11 @@ class MenuWidget(QTabWidget):
         opacity_layout.addWidget(slider1)
         opacity_changer.setLayout(opacity_layout)
 
+        # Tab0 - Exit from app
         exit_button = QPushButton('Exit')
         exit_button.clicked.connect(self.exit)
 
+        # Register Tab 1 widgets
         tab0_layout.addWidget(opacity_changer)
         tab0_layout.addWidget(exit_button)
         tab0.setLayout(tab0_layout)
@@ -138,15 +150,17 @@ class MenuWidget(QTabWidget):
         tab1.setLayout(tab1_layout)
         self.tabBarClicked.connect(self.clear)
 
-        # Tab 2 - Size
+        # Tab 2 - Size and drawing modes
         tab2 = QWidget()
         tab2_layout = QHBoxLayout()
-        tab2_layout.addWidget(QLabel('Size:'))
 
+        # Tab2 - Size
+        tab2_layout.addWidget(QLabel('Size:'))
         slider = QSlider(Qt.Orientation.Horizontal)
         slider.valueChanged.connect(self.change_size)
         tab2_layout.addWidget(slider)
 
+        # Tab2 - mode buttons
         buttons = QWidget()
         buttons_layout = QVBoxLayout()
 
@@ -157,12 +171,12 @@ class MenuWidget(QTabWidget):
         pen_button = QPushButton('Pen')
         pen_button.clicked.connect(lambda: self.draw_mode_change('pen'))
 
+        # Register Tab 2 widgets
         buttons_layout.addWidget(circle_button)
         buttons_layout.addWidget(line_button)
         buttons_layout.addWidget(pen_button)
         buttons.setLayout(buttons_layout)
         tab2_layout.addWidget(buttons)
-
         tab2.setLayout(tab2_layout)
 
         # Tab 3 - Color
@@ -181,7 +195,7 @@ class MenuWidget(QTabWidget):
     # func which is clear drawings
     def clear(self, index):
         if index == 1:
-            self.draw_area.image.fill(QColor(0, 0, 0, self.draw_area.opacity))
+            self.draw_area.image.fill(QColor(0, 0, 0, 1))
             self.draw_area.update()
             # print(self.draw_area.opacity)
 
@@ -199,7 +213,7 @@ class MenuWidget(QTabWidget):
         self.draw_area.opacity = int(value * 2.5)
         if self.draw_area.opacity == 0:
             self.draw_area.opacity = 1
-        self.draw_area.image.fill(QColor(0, 0, 0, self.draw_area.opacity))
+        self.draw_area.background.fill(QColor(0, 0, 0, self.draw_area.opacity))
         self.draw_area.update()
 
     # the func for exit from the app
