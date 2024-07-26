@@ -61,16 +61,16 @@ class DrawingWidget(QWidget):
                     self.drawing = True
                     self.start_point = event.position().toPoint()
                     self.temp_image = self.image.copy()
+                    # Save image state
+                    if len(self.history) <= 10:
+                        self.history.append(self.temp_image.copy())
+                    else:
+                        self.history = self.history[1:]
+                        self.history.append(self.temp_image.copy())
+                    self.update()
                 else:
                     self.drawing = False
                     self.image = self.temp_image
-                    # Save image state
-                    if len(self.history) <= 10:
-                        self.history.append(self.image.copy())
-                    else:
-                        self.history = self.history[1:]
-                        self.history.append(self.image.copy())
-                    self.update()
 
     # func for drawing in different drawing modes
     def mouseMoveEvent(self, event: QMouseEvent):
