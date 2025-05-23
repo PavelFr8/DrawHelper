@@ -1,7 +1,0 @@
-PyQt6==6.7.0
-PyQt6-Qt6==6.7.1
-PyQt6-sip==13.6.0
-pyshortcuts==1.9.0
-pywin32==306
-pywin32-ctypes==0.2.2
-winshell==0.6

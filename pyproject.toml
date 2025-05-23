@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drawhelper"
+version = "2.0.0a"
+description = "Application for drawing on the screen"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "PavelFr8"},
+]
+dependencies = ["PyQt6"]
+
+[project.scripts]
+drawhelper = "drawhelper.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"drawhelper" = ["img/*", "saves/*"]
+
+[tool.flake8]
+import-order-style = "google"
+exclude = "venv, .venv, .env, .git, __pycache__"
+max-line-length = 79
+inline-quotes = "double"
+forbidden-imports = "inspect,sys"
+disable-noqa = true
+
+[tool.black]
+line-length = 79
