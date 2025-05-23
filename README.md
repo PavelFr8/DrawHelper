@@ -64,9 +64,6 @@ Built with pure PyQt6, DrawHelper is perfect for quick drawings, simple diagrams
 
 1. Download the latest release from the [Releases page](https://github.com/PavelFr8/DrawHelper/releases)
 2. Run the installer `.exe` file
-3. Choose install directory (default is `%AppData%\DrawHelper`)
-4. Select if you want a desktop shortcut
-5. Launch DrawHelper from Start Menu or desktop shortcut
 
 ---
 
