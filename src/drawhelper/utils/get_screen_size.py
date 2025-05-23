@@ -1,8 +1,11 @@
-import ctypes
+from PyQt6.QtGui import QGuiApplication
 
 
-# get the size of users screen.
 def get_screen_size() -> tuple[int, int]:
-    user32 = ctypes.windll.user32
-    width, height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    screen = QGuiApplication.primaryScreen()
+    geometry = screen.geometry()
+    dpr = screen.devicePixelRatio()
+
+    width = int(geometry.width() * dpr)
+    height = int(geometry.height() * dpr)
     return width, height

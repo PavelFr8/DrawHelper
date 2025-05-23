@@ -1,13 +1,11 @@
 from PyQt6.QtWidgets import (
     QWidget, QTabWidget, QHBoxLayout, QLabel, QSlider, QColorDialog,
-    QPushButton, QVBoxLayout
+    QPushButton, QVBoxLayout, QApplication
 )
-from PyQt6.QtGui import QColor
-from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor, QKeyEvent
+from PyQt6.QtCore import Qt, QEvent
 
-from core.drawing_widget import DrawingWidget
-
-import sys
+from drawhelper.core.drawing_widget import DrawingWidget
 
 
 # the menu class
@@ -15,7 +13,7 @@ class MenuWidget(QTabWidget):
     def __init__(self, draw_area):
         super().__init__()
         self.draw_area: DrawingWidget = draw_area
-        self.setFixedSize(260, 145)
+        self.setFixedSize(270, 185)
         self.setStyleSheet("""
             font-weight: bold;
             font-size: 13px;
@@ -53,7 +51,7 @@ class MenuWidget(QTabWidget):
 
         # Tab 2 - Size and drawing modes
         tab2 = QWidget()
-        tab2_layout = QHBoxLayout()
+        tab2_layout = QVBoxLayout()
 
         # Tab2 - Size
         tab2_layout.addWidget(QLabel('Size:'))
@@ -63,19 +61,35 @@ class MenuWidget(QTabWidget):
 
         # Tab2 - mode buttons
         buttons = QWidget()
-        buttons_layout = QVBoxLayout()
+        buttons_layout = QHBoxLayout()
 
+        column1 = QWidget()
+        column1_layout = QVBoxLayout()
         circle_button = QPushButton('Circle')
         circle_button.clicked.connect(lambda: self.draw_mode_change('circle'))
         line_button = QPushButton('Line')
         line_button.clicked.connect(lambda: self.draw_mode_change('line'))
+        column1_layout.addWidget(circle_button)
+        column1_layout.addWidget(line_button)
+        column1.setLayout(column1_layout)
+
+        column2 = QWidget()
+        column2_layout = QVBoxLayout()
         pen_button = QPushButton('Pen')
         pen_button.clicked.connect(lambda: self.draw_mode_change('pen'))
+        column2_layout.addWidget(pen_button)
+        column2.setLayout(column2_layout)
 
-        # Register Tab 2 widgets
-        buttons_layout.addWidget(circle_button)
-        buttons_layout.addWidget(line_button)
-        buttons_layout.addWidget(pen_button)
+        column3 = QWidget()
+        column3_layout = QVBoxLayout()
+        eraser_button = QPushButton('Eraser')
+        eraser_button.clicked.connect(lambda: self.draw_mode_change('eraser'))
+        column3_layout.addWidget(eraser_button)
+        column3.setLayout(column3_layout)
+
+        buttons_layout.addWidget(column1)
+        buttons_layout.addWidget(column2)
+        buttons_layout.addWidget(column3)
         buttons.setLayout(buttons_layout)
         tab2_layout.addWidget(buttons)
         tab2.setLayout(tab2_layout)
@@ -96,7 +110,7 @@ class MenuWidget(QTabWidget):
     # func which is clear drawings
     def clear(self, index):
         if index == 1:
-            self.draw_area.image.fill(QColor(0, 0, 0, 1))
+            self.draw_area.image.fill(Qt.GlobalColor.transparent)
             self.draw_area.update()
 
     # func which is help choose color
@@ -104,11 +118,11 @@ class MenuWidget(QTabWidget):
         if index == 2:
             color = QColorDialog.getColor()
             if color.isValid():
-                self.draw_area.pen.setColor(color)
+                self.draw_area.currect_pen.setColor(color)
 
     # func which is change size of the pen
     def change_size(self, value):
-        self.draw_area.pen.setWidthF(value / 4)
+        self.draw_area.currect_pen.setWidthF(value)
 
     # func which is change background opacity
     def change_opacity(self, value):
@@ -122,8 +136,13 @@ class MenuWidget(QTabWidget):
 
     # the func for exit from the app
     def exit(self):
-        
+        event = QKeyEvent(
+            QEvent.Type.KeyPress,
+            Qt.Key.Key_Escape,
+            Qt.KeyboardModifier.NoModifier,
+        )
+        QApplication.postEvent(self, event)
 
     # change drawing modes
     def draw_mode_change(self, mode):
-        self.draw_area.mode = mode
+        self.draw_area.pen.mode = mode

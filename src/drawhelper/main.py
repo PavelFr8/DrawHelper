@@ -1,11 +1,14 @@
 from PyQt6.QtWidgets import QApplication
 
-import sys
+from drawhelper.core.main_window import MainWindow
 
-from core.main_window import MainWindow
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
+def main():
+    app = QApplication([])
     window = MainWindow()
     window.show()
     app.exec()
+
+
+if __name__ == "__main__":
+    main()

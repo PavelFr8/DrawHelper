@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "drawhelper"
-version = "2.0.0a"
+version = "2.0.0"
 description = "Application for drawing on the screen"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -20,7 +20,7 @@ drawhelper = "drawhelper.main:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-"drawhelper" = ["img/*", "saves/*"]
+"drawhelper" = ["imgs/*"]
 
 [tool.flake8]
 import-order-style = "google"
