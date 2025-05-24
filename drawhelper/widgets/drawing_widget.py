@@ -1,8 +1,8 @@
+from PyQt6.QtCore import QPoint, Qt
+from PyQt6.QtGui import QColor, QImage, QMouseEvent, QPainter, QPen
 from PyQt6.QtWidgets import QWidget
-from PyQt6.QtGui import QPainter, QPen, QMouseEvent, QImage, QColor
-from PyQt6.QtCore import Qt, QPoint
 
-from drawhelper.utils.qimage_convert import qimage_to_bytes, bytes_to_qimage
+from utils.qimage_convert import bytes_to_qimage, qimage_to_bytes
 
 
 # widget which is works as area where user draw
@@ -38,8 +38,10 @@ class DrawingWidget(QWidget):
         self.canvas_size = width, height - 50
         self.setFixedSize(*self.canvas_size)
 
-        self.background = QImage(*self.canvas_size,
-                                 QImage.Format.Format_ARGB32)
+        self.background = QImage(
+            *self.canvas_size,
+            QImage.Format.Format_ARGB32,
+        )
         self.background_opacity = 100
         self.background.fill(QColor(0, 0, 0, self.background_opacity))
 
@@ -52,11 +54,11 @@ class DrawingWidget(QWidget):
     # funcs for drawing
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
-            if self.pen.mode in ('pen', "eraser"):
+            if self.pen.mode in ("pen", "eraser"):
                 self.drawing = True
                 self.end_point = event.position().toPoint()
                 self.save_history(self.image)
-            elif self.pen.mode in ('circle', 'line'):
+            elif self.pen.mode in ("circle", "line"):
                 if not self.drawing:
                     self.drawing = True
                     self.start_point = event.position().toPoint()
@@ -70,7 +72,7 @@ class DrawingWidget(QWidget):
     # func for drawing in different drawing modes
     def mouseMoveEvent(self, event: QMouseEvent):
         if (event.buttons() & Qt.MouseButton.LeftButton) and self.drawing:
-            if self.pen.mode == 'pen':
+            if self.pen.mode == "pen":
                 painter = QPainter(self.image)
                 self.currect_pen = self.pen
                 painter.setPen(self.pen)
@@ -78,7 +80,7 @@ class DrawingWidget(QWidget):
                 painter.drawLine(self.end_point, current_point)
                 self.end_point = current_point
 
-            if self.pen.mode == 'circle':
+            if self.pen.mode == "circle":
                 self.temp_image = self.image.copy()
                 painter = QPainter(self.temp_image)
                 self.currect_pen = self.pen
@@ -87,7 +89,7 @@ class DrawingWidget(QWidget):
                 radius = (self.start_point - current_point).manhattanLength()
                 painter.drawEllipse(self.start_point, radius, radius)
 
-            if self.pen.mode == 'line':
+            if self.pen.mode == "line":
                 self.temp_image = self.image.copy()
                 painter = QPainter(self.temp_image)
                 self.currect_pen = self.pen
@@ -97,8 +99,8 @@ class DrawingWidget(QWidget):
             if self.pen.mode == "eraser":
                 painter = QPainter(self.image)
                 painter.setCompositionMode(
-                    QPainter.CompositionMode.CompositionMode_Clear
-                    )
+                    QPainter.CompositionMode.CompositionMode_Clear,
+                )
                 self.currect_pen = self.eraser
                 painter.setPen(self.eraser)
                 current_point = event.position().toPoint()
@@ -112,6 +114,7 @@ class DrawingWidget(QWidget):
             self.drawing = False
             if self.pen.mode == "circle" or self.pen.mode == "line":
                 self.image = self.temp_image
+
             self.update()
 
     def paintEvent(self, event):
@@ -121,7 +124,7 @@ class DrawingWidget(QWidget):
 
         if (
             self.temp_image
-            and (self.pen.mode == 'circle' or self.pen.mode == 'line')
+            and (self.pen.mode == "circle" or self.pen.mode == "line")
             and self.drawing
         ):
             canvas_painter.drawImage(0, 0, self.temp_image)
@@ -133,6 +136,7 @@ class DrawingWidget(QWidget):
         self.undo_stack.append(image_bytes)
         if len(self.undo_stack) > self.MAX_HISTORY:
             self.undo_stack.pop(0)
+
         self.redo_stack.clear()
 
     def undo(self):

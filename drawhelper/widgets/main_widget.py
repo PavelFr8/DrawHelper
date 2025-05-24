@@ -1,14 +1,13 @@
-from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QErrorMessage
-from PyQt6.QtGui import QKeyEvent, QColor, QKeySequence
-from PyQt6.QtCore import Qt, QSettings, QByteArray, QBuffer, QIODevice
+from PyQt6.QtCore import QBuffer, QByteArray, QIODevice, QSettings, Qt
+from PyQt6.QtGui import QColor, QKeyEvent, QKeySequence
+from PyQt6.QtWidgets import QErrorMessage, QHBoxLayout, QMainWindow, QWidget
 
-from drawhelper.utils.get_screen_size import get_screen_size
+from utils.get_screen_size import get_screen_size
+from widgets.drawing_widget import DrawingWidget
+from widgets.menu_widget import MenuWidget
 
-from drawhelper.core.drawing_widget import DrawingWidget
-from drawhelper.core.menu_widget import MenuWidget
 
-
-class MainWindow(QMainWindow):
+class MainWidget(QMainWindow):
     DEFAULT_SAVE_PATH = "saves"
 
     def __init__(self):
@@ -19,7 +18,6 @@ class MainWindow(QMainWindow):
         self.window_size = get_screen_size()
         self.setGeometry(1, 1, *self.window_size)
 
-        # Central widget
         central_widget = QWidget(self)
         central_layout = QHBoxLayout(central_widget)
         self.drawing_widget = DrawingWidget(*self.window_size)
@@ -27,7 +25,6 @@ class MainWindow(QMainWindow):
         central_widget.setLayout(central_layout)
         self.setCentralWidget(central_widget)
 
-        # Menu
         self.menu_widget = MenuWidget(self.drawing_widget)
         self.menu_widget.setParent(self)
         self.menu_widget.setGeometry(1, 1, 200, self.window_size[1] - 50)
@@ -55,8 +52,10 @@ class MainWindow(QMainWindow):
 
         if event.matches(QKeySequence.StandardKey.Undo):  # Ctrl+Z
             self.drawing_widget.undo()
+
         if event.matches(QKeySequence.StandardKey.Redo):  # Ctrl+Y
             self.drawing_widget.redo()
+
         if event.matches(QKeySequence.StandardKey.Save):  # Ctrl+S
             self.create_save()
 
@@ -82,13 +81,16 @@ class MainWindow(QMainWindow):
     def create_save(self):
         try:
             self.settings.setValue(
-                "pen_color", self.drawing_widget.pen.color().name()
+                "pen_color",
+                self.drawing_widget.pen.color().name(),
             )
             self.settings.setValue(
-                "pen_size", self.drawing_widget.pen.widthF()
+                "pen_size",
+                self.drawing_widget.pen.widthF(),
             )
             self.settings.setValue(
-                "background_opacity", self.drawing_widget.background_opacity
+                "background_opacity",
+                self.drawing_widget.background_opacity,
             )
 
             buffer = QBuffer()

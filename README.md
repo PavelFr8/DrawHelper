@@ -2,7 +2,7 @@
 
 ![Static Badge](https://img.shields.io/badge/PyQt6-DrawHelper%20%F0%9F%96%8C-orange)
 
-![DrawHelper Interface](src/drawhelper/imgs/img.png)
+![DrawHelper Interface](imgs/img.png)
 
 Hey there! Welcome to **DrawHelper** — a desktop app designed to help you sketch, annotate, and create visual notes with ease.
 
@@ -39,7 +39,7 @@ Built with pure PyQt6, DrawHelper is perfect for quick drawings, simple diagrams
    cd DrawHelper
    ```
 
-2. Create and activate a virtual environment (recommended):
+2. Create and activate a virtual environment:
 
    ```bash
    python -m venv venv
@@ -49,13 +49,13 @@ Built with pure PyQt6, DrawHelper is perfect for quick drawings, simple diagrams
 3. Install dependencies:
 
    ```bash
-   pip install .
+   pip install -r requirements.txt
    ```
 
 4. Run the app:
 
    ```bash
-   drawhelper
+   python3 drawhelper\main.py  
    ```
 
 ---
@@ -70,22 +70,19 @@ Built with pure PyQt6, DrawHelper is perfect for quick drawings, simple diagrams
 ## 🛠 Project Structure
 
 ```
-├── src
-│   └── drawhelper
-│       ├── __init__.py
-│       ├── __main__.py
-│       ├── main.py
-│       ├── core
-│       │   ├── drawing_widget.py
-│       │   ├── main_window.py
-│       │   └── menu_widget.py
-│       ├── imgs
-│       └── utils
-├── DrawHelper.spec
-├── LICENSE
-├── README.md
+├── drawhelper
+│   ├── main.py
+│   ├── utils
+│   └── widgets
+│       ├── drawing_widget.py
+│       ├── main_widget.py
+│       └── menu_widget.py
+├── imgs
 ├── installer.iss
 ├── pyproject.toml
+├── requirements.txt
+├── LICENSE
+└── README.md
 ```
 
 ## 🤝 Contributing

@@ -1,24 +1,32 @@
-from PyQt6.QtWidgets import (
-    QWidget, QTabWidget, QHBoxLayout, QLabel, QSlider, QColorDialog,
-    QPushButton, QVBoxLayout, QApplication
-)
+from PyQt6.QtCore import QEvent, Qt
 from PyQt6.QtGui import QColor, QKeyEvent
-from PyQt6.QtCore import Qt, QEvent
+from PyQt6.QtWidgets import (
+    QApplication,
+    QColorDialog,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSlider,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
-from drawhelper.core.drawing_widget import DrawingWidget
+from widgets.drawing_widget import DrawingWidget
 
 
-# the menu class
 class MenuWidget(QTabWidget):
     def __init__(self, draw_area):
         super().__init__()
         self.draw_area: DrawingWidget = draw_area
         self.setFixedSize(270, 185)
-        self.setStyleSheet("""
-            font-weight: bold;
-            font-size: 13px;
-            background-color: rgba(10, 10, 10, 70);
-        """)
+        self.setStyleSheet(
+            """
+                font-weight: bold;
+                font-size: 13px;
+                background-color: rgba(10, 10, 10, 70);
+            """,
+        )
 
         # Tab0 - Settings
         tab0 = QWidget()
@@ -27,15 +35,15 @@ class MenuWidget(QTabWidget):
         # Tab0 - Background
         opacity_changer = QWidget()
         opacity_layout = QHBoxLayout()
-        opacity_layout.addWidget(QLabel('Background:'))
+        opacity_layout.addWidget(QLabel("Background:"))
         slider1 = QSlider(Qt.Orientation.Horizontal)
         slider1.valueChanged.connect(self.change_opacity)
         opacity_layout.addWidget(slider1)
         opacity_changer.setLayout(opacity_layout)
 
         # Tab0 - Exit from app
-        exit_button = QPushButton('Exit')
-        exit_button.clicked.connect(self.exit)
+        exit_button = QPushButton("Exit")
+        exit_button.clicked.connect(self.exit_app)
 
         # Register Tab 1 widgets
         tab0_layout.addWidget(opacity_changer)
@@ -45,7 +53,7 @@ class MenuWidget(QTabWidget):
         # Tab 1 - Clear
         tab1 = QWidget()
         tab1_layout = QVBoxLayout()
-        tab1_layout.addWidget(QPushButton('Your screen was cleaned!'))
+        tab1_layout.addWidget(QPushButton("Your screen was cleaned!"))
         tab1.setLayout(tab1_layout)
         self.tabBarClicked.connect(self.clear)
 
@@ -53,8 +61,7 @@ class MenuWidget(QTabWidget):
         tab2 = QWidget()
         tab2_layout = QVBoxLayout()
 
-        # Tab2 - Size
-        tab2_layout.addWidget(QLabel('Size:'))
+        tab2_layout.addWidget(QLabel("Size:"))
         slider = QSlider(Qt.Orientation.Horizontal)
         slider.valueChanged.connect(self.change_size)
         tab2_layout.addWidget(slider)
@@ -65,25 +72,25 @@ class MenuWidget(QTabWidget):
 
         column1 = QWidget()
         column1_layout = QVBoxLayout()
-        circle_button = QPushButton('Circle')
-        circle_button.clicked.connect(lambda: self.draw_mode_change('circle'))
-        line_button = QPushButton('Line')
-        line_button.clicked.connect(lambda: self.draw_mode_change('line'))
+        circle_button = QPushButton("Circle")
+        circle_button.clicked.connect(lambda: self.draw_mode_change("circle"))
+        line_button = QPushButton("Line")
+        line_button.clicked.connect(lambda: self.draw_mode_change("line"))
         column1_layout.addWidget(circle_button)
         column1_layout.addWidget(line_button)
         column1.setLayout(column1_layout)
 
         column2 = QWidget()
         column2_layout = QVBoxLayout()
-        pen_button = QPushButton('Pen')
-        pen_button.clicked.connect(lambda: self.draw_mode_change('pen'))
+        pen_button = QPushButton("Pen")
+        pen_button.clicked.connect(lambda: self.draw_mode_change("pen"))
         column2_layout.addWidget(pen_button)
         column2.setLayout(column2_layout)
 
         column3 = QWidget()
         column3_layout = QVBoxLayout()
-        eraser_button = QPushButton('Eraser')
-        eraser_button.clicked.connect(lambda: self.draw_mode_change('eraser'))
+        eraser_button = QPushButton("Eraser")
+        eraser_button.clicked.connect(lambda: self.draw_mode_change("eraser"))
         column3_layout.addWidget(eraser_button)
         column3.setLayout(column3_layout)
 
@@ -97,7 +104,7 @@ class MenuWidget(QTabWidget):
         # Tab 3 - Color
         tab3 = QWidget()
         tab3_layout = QVBoxLayout()
-        tab3_layout.addWidget(QPushButton('Yahoo! You changed color!'))
+        tab3_layout.addWidget(QPushButton("Yahoo! You changed color!"))
         tab3.setLayout(tab3_layout)
         self.tabBarClicked.connect(self.choose_color)
 
@@ -129,13 +136,14 @@ class MenuWidget(QTabWidget):
         self.draw_area.background_opacity = int(value * 2.5)
         if self.draw_area.background_opacity == 0:
             self.draw_area.background_opacity = 1
+
         self.draw_area.background.fill(
-            QColor(0, 0, 0, self.draw_area.background_opacity)
+            QColor(0, 0, 0, self.draw_area.background_opacity),
         )
         self.draw_area.update()
 
     # the func for exit from the app
-    def exit(self):
+    def exit_app(self):
         event = QKeyEvent(
             QEvent.Type.KeyPress,
             Qt.Key.Key_Escape,
