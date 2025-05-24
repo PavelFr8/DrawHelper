@@ -1,11 +1,11 @@
 from PyQt6.QtWidgets import QApplication
 
-from drawhelper.core.main_window import MainWindow
+from widgets.main_widget import MainWidget
 
 
 def main():
     app = QApplication([])
-    window = MainWindow()
+    window = MainWidget()
     window.show()
     app.exec()
 
