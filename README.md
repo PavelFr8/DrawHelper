@@ -25,7 +25,7 @@ Built with pure PyQt6, DrawHelper is perfect for quick drawings, simple diagrams
 ### Requirements
 
 * Windows 10 or newer
-* Python 3.12+ (if running from source)
+* Python 3 (if running from source)
 * PyQt6 (if running from source)
 
 ---
